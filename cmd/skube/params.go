@@ -51,7 +51,7 @@ var (
 	}
 )
 
-func parseParams(raw []string) Params {
+func parseParams(raw []string) *Params {
 	params := Params{}
 
 	for index := 0; index < len(raw); index++ {
@@ -106,7 +106,7 @@ func parseParams(raw []string) Params {
 		// get deployments nodejs%
 		// if index == 1 then it's first argument after name of program
 		if index > 1 && params.Match == nil {
-			params.Match = parseMatch(value, raw, index)
+			params.Match = parseMatch(value, params.Args)
 
 			if params.Match != nil {
 				continue
@@ -116,18 +116,21 @@ func parseParams(raw []string) Params {
 		params.Args = append(params.Args, value)
 	}
 
-	return params
+	return &params
 }
 
 func parseMatch(
 	value string,
-	raw []string,
-	index int,
+	args []string,
 ) *ParamsMatch {
+	var (
+		placeholder = len(args)
+	)
+
 	if value[len(value)-1] == SymbolMatch {
 		match := &ParamsMatch{
-			Resource:    mapResource(raw[index-1]),
-			Placeholder: index,
+			Resource:    mapResource(args[len(args)-1]),
+			Placeholder: placeholder,
 		}
 
 		if value[len(value)-2] == SymbolMatch {
@@ -165,8 +168,8 @@ func parseMatch(
 
 			// also need to cut % and :
 			match := &ParamsMatch{
-				Resource:    mapResource(raw[index-1]),
-				Placeholder: index,
+				Resource:    mapResource(args[len(args)-1]),
+				Placeholder: placeholder,
 				Query:       value[:digitsStart-2],
 				Select:      true,
 				Element:     element,
@@ -196,7 +199,7 @@ func mapResource(resource string) string {
 
 func parseContext(
 	value string,
-	raw []string,
+	args []string,
 	index int,
 ) (name string, usedNext bool) {
 	if value[0] == SymbolContext {
@@ -204,8 +207,8 @@ func parseContext(
 	}
 
 	if value == FlagContext {
-		if index+1 <= len(raw)-1 {
-			return raw[index+1], true
+		if index+1 <= len(args)-1 {
+			return args[index+1], true
 		}
 
 		return "", false
@@ -221,7 +224,7 @@ func parseContext(
 
 func parseNamespace(
 	value string,
-	raw []string,
+	args []string,
 	index int,
 ) (name string, all bool, usedNext bool) {
 	if value[0] == SymbolNamespace {
@@ -237,8 +240,8 @@ func parseNamespace(
 	}
 
 	if value == FlagNamespaceShort {
-		if index+1 <= len(raw)-1 {
-			return raw[index+1], false, true
+		if index+1 <= len(args)-1 {
+			return args[index+1], false, true
 		}
 
 		return "", false, false
@@ -250,8 +253,8 @@ func parseNamespace(
 	}
 
 	if value == FlagNamespace {
-		if index+1 <= len(raw)-1 {
-			return raw[index+1], false, true
+		if index+1 <= len(args)-1 {
+			return args[index+1], false, true
 		}
 
 		return "", false, false

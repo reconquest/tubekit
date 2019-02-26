@@ -12,6 +12,10 @@ import (
 	"github.com/reconquest/karma-go"
 )
 
+var (
+	debug = os.Getenv("QUADRO_DEBUG") == "1"
+)
+
 func main() {
 	ctlPath := "/usr/bin/kubectl"
 	if envPath := os.Getenv("QUADRO_KUBECTL"); envPath != "" {
@@ -25,10 +29,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	args := buildArgs(params)
-
 	if params.Match == nil {
-		syscallExec(ctlPath, args)
+		syscallExec(ctlPath, params)
 		return
 	}
 
@@ -64,7 +66,7 @@ func main() {
 		)
 	}
 
-	tasks := getTasks(ctlPath, args, matched, params.Match.Placeholder)
+	tasks := getTasks(ctlPath, params, matched)
 
 	if params.Match.Parallel {
 		parallelize(tasks)
@@ -86,7 +88,7 @@ func main() {
 	os.Exit(code)
 }
 
-func matchResources(resources []string, params *ParamsMatch) ([]string, error) {
+func matchResources(resources []Resource, params *ParamsMatch) ([]Resource, error) {
 	exp, err := regexp.Compile(params.Query)
 	if err != nil {
 		return nil, karma.Format(
@@ -95,9 +97,9 @@ func matchResources(resources []string, params *ParamsMatch) ([]string, error) {
 		)
 	}
 
-	matched := []string{}
+	matched := []Resource{}
 	for _, resource := range resources {
-		if exp.MatchString(resource) {
+		if exp.MatchString(resource.Name) {
 			matched = append(matched, resource)
 		}
 	}
@@ -105,46 +107,50 @@ func matchResources(resources []string, params *ParamsMatch) ([]string, error) {
 	return matched, nil
 }
 
-func syscallExec(ctlPath string, args []string) {
-	syscall.Exec(
-		ctlPath,
-		append([]string{ctlPath}, args...),
-		os.Environ(),
-	)
-}
+func syscallExec(ctlPath string, params *Params) {
+	args := []string{ctlPath}
 
-func buildArgs(params Params) []string {
-	args := []string{}
-
-	if arg := buildArgContext(params); arg != "" {
+	if arg := buildArgContext(params.Context); arg != "" {
 		args = append(args, arg)
 	}
 
-	if arg := buildArgNamespace(params); arg != "" {
+	if arg := buildArgNamespace(params.Namespace); arg != "" {
 		args = append(args, arg)
 	}
 
 	args = append(args, params.Args...)
 
-	return args
+	if arg := buildArgAllNamespaces(params.AllNamespaces); arg != "" {
+		args = append(args, arg)
+	}
+
+	if debug {
+		log.Printf(":: %q", args)
+	}
+
+	syscall.Exec(
+		ctlPath,
+		args,
+		os.Environ(),
+	)
 }
 
-func completeParams(ctlPath string, params Params) (Params, error) {
+func completeParams(ctlPath string, params *Params) (*Params, error) {
 	if params.CompleteContext {
 		contexts, err := parseKubernetesContexts()
 		if err != nil {
 			return params, err
 		}
 
-		completeed := complete(contexts, params.Context)
-		if completeed == "" && params.Context != "" {
+		completed := complete(contexts, params.Context)
+		if completed == "" && params.Context != "" {
 			return params, fmt.Errorf(
 				"unable to find such context: %s",
 				params.Context,
 			)
 		}
 
-		params.Context = completeed
+		params.Context = completed
 	}
 
 	if params.CompleteNamespace {
@@ -156,8 +162,8 @@ func completeParams(ctlPath string, params Params) (Params, error) {
 			)
 		}
 
-		completeed := complete(namespaces, params.Namespace)
-		if completeed == "" && params.Context != "" {
+		completed := complete(namespaces, params.Namespace)
+		if completed == "" && params.Context != "" {
 			return params, fmt.Errorf(
 				"unable to find such namespace in context %s: %s",
 				params.Context,
@@ -165,7 +171,7 @@ func completeParams(ctlPath string, params Params) (Params, error) {
 			)
 		}
 
-		params.Namespace = completeed
+		params.Namespace = completed
 	}
 
 	return params, nil

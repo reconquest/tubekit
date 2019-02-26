@@ -11,11 +11,11 @@ func TestParams_Suites(t *testing.T) {
 
 	testcases := []struct {
 		raw    []string
-		result Params
+		result *Params
 	}{
 		{
 			[]string{"get", "pods", "@ctx"},
-			Params{
+			&Params{
 				CompleteContext: true,
 				Context:         "ctx",
 				Args:            []string{"get", "pods"},
@@ -23,7 +23,7 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"@ctx", "get", "pods"},
-			Params{
+			&Params{
 				CompleteContext: true,
 				Context:         "ctx",
 				Args:            []string{"get", "pods"},
@@ -31,7 +31,7 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"get", "@ctx", "pods"},
-			Params{
+			&Params{
 				CompleteContext: true,
 				Context:         "ctx",
 				Args:            []string{"get", "pods"},
@@ -39,64 +39,64 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"@ctx"},
-			Params{
+			&Params{
 				CompleteContext: true,
 				Context:         "ctx",
 			},
 		},
 		{
 			[]string{"get", "pods"},
-			Params{
+			&Params{
 				Args: []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"get", "pods", "@"},
-			Params{
+			&Params{
 				Args: []string{"get", "pods", "@"},
 			},
 		},
 		{
 			[]string{"get", "pods", "-c", "ctx"},
-			Params{
+			&Params{
 				Args: []string{"get", "pods", "-c", "ctx"},
 			},
 		},
 		{
 			[]string{"get", "pods", "-c=ctx"},
-			Params{
+			&Params{
 				Args: []string{"get", "pods", "-c=ctx"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--context", "ctx"},
-			Params{
+			&Params{
 				Context: "ctx",
 				Args:    []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--context"},
-			Params{
+			&Params{
 				Args: []string{"get", "pods", "--context"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--context=ctx"},
-			Params{
+			&Params{
 				Context: "ctx",
 				Args:    []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--context=", "ctx"},
-			Params{
+			&Params{
 				Args: []string{"get", "pods", "--context=", "ctx"},
 			},
 		},
 		{
 			[]string{"get", "pods", "+ns"},
-			Params{
+			&Params{
 				CompleteNamespace: true,
 				Namespace:         "ns",
 				Args:              []string{"get", "pods"},
@@ -104,7 +104,7 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"get", "+ns", "pods"},
-			Params{
+			&Params{
 				CompleteNamespace: true,
 				Namespace:         "ns",
 				Args:              []string{"get", "pods"},
@@ -112,7 +112,7 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"+ns", "get", "pods"},
-			Params{
+			&Params{
 				CompleteNamespace: true,
 				Namespace:         "ns",
 				Args:              []string{"get", "pods"},
@@ -120,55 +120,55 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"get", "pods", "-n", "ns"},
-			Params{
+			&Params{
 				Namespace: "ns",
 				Args:      []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--namespace", "ns"},
-			Params{
+			&Params{
 				Namespace: "ns",
 				Args:      []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--namespace=ns"},
-			Params{
+			&Params{
 				Namespace: "ns",
 				Args:      []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"get", "pods", "--namespace="},
-			Params{
+			&Params{
 				Args: []string{"get", "pods", "--namespace="},
 			},
 		},
 		{
 			[]string{"get", "pods", "++"},
-			Params{
+			&Params{
 				AllNamespaces: true,
 				Args:          []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"++", "get", "pods"},
-			Params{
+			&Params{
 				AllNamespaces: true,
 				Args:          []string{"get", "pods"},
 			},
 		},
 		{
 			[]string{"++", "get", "pods", "+ns"},
-			Params{
+			&Params{
 				AllNamespaces: true,
 				Args:          []string{"get", "pods", "+ns"},
 			},
 		},
 		{
 			[]string{"get", "pods", "+ns", "++"},
-			Params{
+			&Params{
 				CompleteNamespace: true,
 				Namespace:         "ns",
 				Args:              []string{"get", "pods", "++"},
@@ -177,7 +177,7 @@ func TestParams_Suites(t *testing.T) {
 		// weird case, no idea what behaviour could be expected in such case
 		{
 			[]string{"get", "pods", "+ns", "--all-namespaces"},
-			Params{
+			&Params{
 				CompleteNamespace: true,
 				Namespace:         "ns",
 				Args:              []string{"get", "pods", "--all-namespaces"},
@@ -185,7 +185,7 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"--all-namespaces", "get", "pods", "+ns"},
-			Params{
+			&Params{
 				AllNamespaces: true,
 				Args:          []string{"get", "pods", "+ns"},
 			},
@@ -194,7 +194,7 @@ func TestParams_Suites(t *testing.T) {
 		//
 		{
 			[]string{"get", "pods", "-n", "ns", "@ctx", "-v"},
-			Params{
+			&Params{
 				CompleteContext: true,
 				Context:         "ctx",
 				Namespace:       "ns",
@@ -203,7 +203,7 @@ func TestParams_Suites(t *testing.T) {
 		},
 		{
 			[]string{"get", "pods", "+ns", "@ctx", "-v"},
-			Params{
+			&Params{
 				CompleteContext:   true,
 				Context:           "ctx",
 				CompleteNamespace: true,
@@ -214,76 +214,89 @@ func TestParams_Suites(t *testing.T) {
 		//
 		{
 			[]string{"describe", "pods", "qu%"},
-			Params{
+			&Params{
 				Match: &ParamsMatch{
 					Query:       "qu",
 					Resource:    "pods",
-					Placeholder: 3,
+					Placeholder: 2,
 				},
 				Args: []string{"describe", "pods"},
 			},
 		},
 		{
 			[]string{"describe", "pods", "qu%%"},
-			Params{
+			&Params{
 				Match: &ParamsMatch{
 					Query:       "qu",
 					Resource:    "pods",
 					Parallel:    true,
-					Placeholder: 3,
+					Placeholder: 2,
 				},
 				Args: []string{"describe", "pods"},
 			},
 		},
 		{
 			[]string{"describe", "pods", "qu%:1"},
-			Params{
+			&Params{
 				Match: &ParamsMatch{
 					Query:       "qu",
 					Resource:    "pods",
 					Select:      true,
 					Element:     1,
-					Placeholder: 3,
+					Placeholder: 2,
 				},
 				Args: []string{"describe", "pods"},
 			},
 		},
 		{
 			[]string{"describe", "pods", "qu%:10"},
-			Params{
+			&Params{
 				Match: &ParamsMatch{
 					Query:       "qu",
 					Resource:    "pods",
 					Select:      true,
 					Element:     10,
-					Placeholder: 3,
+					Placeholder: 2,
 				},
 				Args: []string{"describe", "pods"},
 			},
 		},
 		{
 			[]string{"describe", "pods", "qu2%:10"},
-			Params{
+			&Params{
 				Match: &ParamsMatch{
 					Query:       "qu2",
 					Resource:    "pods",
 					Select:      true,
 					Element:     10,
-					Placeholder: 3,
+					Placeholder: 2,
 				},
 				Args: []string{"describe", "pods"},
 			},
 		},
 		{
 			[]string{"describe", "pods", "qu%10"},
-			Params{
+			&Params{
 				Args: []string{"describe", "pods", "qu%10"},
 			},
 		},
 		{
 			[]string{"describe", "pods", "qu:10"},
-			Params{
+			&Params{
 				Args: []string{"describe", "pods", "qu:10"},
+			},
+		},
+		{
+			[]string{"logs", "@ctx", "blah%"},
+			&Params{
+				CompleteContext: true,
+				Context:         "ctx",
+				Match: &ParamsMatch{
+					Resource:    "pod",
+					Query:       "blah",
+					Placeholder: 1,
+				},
+				Args: []string{"logs"},
 			},
 		},
 		//

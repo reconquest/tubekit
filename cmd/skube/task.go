@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"sync"
@@ -13,29 +14,46 @@ import (
 
 type Task func(io.Writer) error
 
-func getTasks(ctlPath string, args []string, resources []string, placeholder int) []Task {
+func getTasks(
+	ctlPath string,
+	params *Params,
+	resources []Resource,
+) []Task {
 	tasks := []Task{}
 
-	for i := range resources {
-		resource := resources[i]
-
-		task := func(writer io.Writer) error {
-			values := append(
-				[]string{},
-				args[:placeholder-1]...,
-			)
-
-			values = append(values, resource)
-
-			values = append(values, args[placeholder-1:]...)
-
-			return run(ctlPath, values, writer)
-		}
-
-		tasks = append(tasks, task)
+	for _, resource := range resources {
+		tasks = append(
+			tasks,
+			getTask(ctlPath, params, resource),
+		)
 	}
 
 	return tasks
+}
+
+func getTask(ctlPath string, params *Params, resource Resource) Task {
+	return func(writer io.Writer) error {
+		values := []string{}
+
+		if arg := buildArgContext(params.Context); arg != "" {
+			values = append(values, arg)
+		}
+
+		if arg := buildArgNamespace(resource.Namespace); arg != "" {
+			values = append(values, arg)
+		}
+
+		values = append(
+			values,
+			params.Args[:params.Match.Placeholder]...,
+		)
+
+		values = append(values, resource.Name)
+
+		values = append(values, params.Args[params.Match.Placeholder:]...)
+
+		return run(ctlPath, values, writer)
+	}
 }
 
 func parallelize(tasks []Task) {
@@ -59,6 +77,10 @@ func parallelize(tasks []Task) {
 }
 
 func run(ctlPath string, args []string, writer io.Writer) error {
+	if debug {
+		log.Printf(":: %q", append([]string{ctlPath}, args...))
+	}
+
 	cmd := exec.Command(ctlPath, args...)
 	cmd.Stdout = writer
 	cmd.Stdin = os.Stdin

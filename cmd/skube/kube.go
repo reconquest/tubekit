@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"sort"
@@ -10,6 +11,11 @@ import (
 	"github.com/reconquest/karma-go"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd"
 )
+
+type Resource struct {
+	Name      string
+	Namespace string
+}
 
 func parseKubernetesContexts() ([]string, error) {
 	config, err := clientcmdapi.NewDefaultClientConfigLoadingRules().Load()
@@ -30,12 +36,16 @@ func parseKubernetesContexts() ([]string, error) {
 	return contexts, nil
 }
 
-func requestNamespaces(ctlPath string, params Params) ([]string, error) {
+func requestNamespaces(ctlPath string, params *Params) ([]string, error) {
 	// omit namespace argument because requesting list of them
 	cmd, args := getCommand(
-		ctlPath, buildArgContext(params), "",
+		ctlPath, buildArgContext(params.Context), "", "",
 		"get", "namespaces", "-o", "json",
 	)
+
+	if debug {
+		log.Printf(":: %q", args)
+	}
 
 	ctx := karma.Describe(
 		"cmdline",
@@ -53,19 +63,25 @@ func requestNamespaces(ctlPath string, params Params) ([]string, error) {
 		)
 	}
 
-	namespaces, err := unmarshalNames(contents)
+	resources, err := unmarshalResources(contents)
 	if err != nil {
 		return nil, ctx.Reason(err)
+	}
+
+	namespaces := []string{}
+	for _, resource := range resources {
+		namespaces = append(namespaces, resource.Name)
 	}
 
 	return namespaces, nil
 }
 
-func requestResources(ctlPath string, params Params) ([]string, error) {
+func requestResources(ctlPath string, params *Params) ([]Resource, error) {
 	cmd, args := getCommand(
 		ctlPath,
-		buildArgContext(params),
-		buildArgNamespace(params),
+		buildArgContext(params.Context),
+		buildArgNamespace(params.Namespace),
+		buildArgAllNamespaces(params.AllNamespaces),
 		"get", params.Match.Resource, "-o", "json",
 	)
 
@@ -85,7 +101,7 @@ func requestResources(ctlPath string, params Params) ([]string, error) {
 		)
 	}
 
-	resources, err := unmarshalNames(contents)
+	resources, err := unmarshalResources(contents)
 	if err != nil {
 		return nil, ctx.Reason(err)
 	}
@@ -93,12 +109,10 @@ func requestResources(ctlPath string, params Params) ([]string, error) {
 	return resources, nil
 }
 
-func unmarshalNames(contents []byte) ([]string, error) {
+func unmarshalResources(contents []byte) ([]Resource, error) {
 	var answer struct {
 		Items []struct {
-			Metadata struct {
-				Name string `json:"name"`
-			}
+			Metadata Resource
 		}
 	}
 
@@ -110,9 +124,9 @@ func unmarshalNames(contents []byte) ([]string, error) {
 		)
 	}
 
-	resources := []string{}
+	resources := []Resource{}
 	for _, item := range answer.Items {
-		resources = append(resources, item.Metadata.Name)
+		resources = append(resources, item.Metadata)
 	}
 
 	return resources, nil
@@ -122,6 +136,7 @@ func getCommand(
 	ctlPath string,
 	argContext,
 	argNamespace string,
+	argAllNamespaces string,
 	value ...string,
 ) (*exec.Cmd, []string) {
 	args := []string{}
@@ -134,22 +149,32 @@ func getCommand(
 
 	args = append(args, value...)
 
+	if argAllNamespaces != "" {
+		args = append(args, argAllNamespaces)
+	}
+
 	return exec.Command(ctlPath, args...), append([]string{ctlPath}, args...)
 }
 
-func buildArgContext(params Params) string {
-	if params.Context != "" {
-		return "--context=" + params.Context
+func buildArgContext(value string) string {
+	if value != "" {
+		return "--context=" + value
 	}
 
 	return ""
 }
 
-func buildArgNamespace(params Params) string {
-	if params.AllNamespaces {
+func buildArgNamespace(value string) string {
+	if value != "" {
+		return "--namespace=" + value
+	}
+
+	return ""
+}
+
+func buildArgAllNamespaces(value bool) string {
+	if value {
 		return "--all-namespaces"
-	} else if params.Namespace != "" {
-		return "--namespace=" + params.Namespace
 	}
 
 	return ""
