@@ -216,8 +216,9 @@ func TestParams_Suites(t *testing.T) {
 			[]string{"describe", "pods", "qu%"},
 			Params{
 				Match: &ParamsMatch{
-					Query:  "qu",
-					Entity: "pods",
+					Query:       "qu",
+					Resource:    "pods",
+					Placeholder: 3,
 				},
 				Args: []string{"describe", "pods"},
 			},
@@ -226,9 +227,10 @@ func TestParams_Suites(t *testing.T) {
 			[]string{"describe", "pods", "qu%%"},
 			Params{
 				Match: &ParamsMatch{
-					Query:    "qu",
-					Entity:   "pods",
-					Parallel: true,
+					Query:       "qu",
+					Resource:    "pods",
+					Parallel:    true,
+					Placeholder: 3,
 				},
 				Args: []string{"describe", "pods"},
 			},
@@ -237,10 +239,11 @@ func TestParams_Suites(t *testing.T) {
 			[]string{"describe", "pods", "qu%:1"},
 			Params{
 				Match: &ParamsMatch{
-					Query:   "qu",
-					Entity:  "pods",
-					Select:  true,
-					Element: 1,
+					Query:       "qu",
+					Resource:    "pods",
+					Select:      true,
+					Element:     1,
+					Placeholder: 3,
 				},
 				Args: []string{"describe", "pods"},
 			},
@@ -249,10 +252,11 @@ func TestParams_Suites(t *testing.T) {
 			[]string{"describe", "pods", "qu%:10"},
 			Params{
 				Match: &ParamsMatch{
-					Query:   "qu",
-					Entity:  "pods",
-					Select:  true,
-					Element: 10,
+					Query:       "qu",
+					Resource:    "pods",
+					Select:      true,
+					Element:     10,
+					Placeholder: 3,
 				},
 				Args: []string{"describe", "pods"},
 			},
@@ -261,10 +265,11 @@ func TestParams_Suites(t *testing.T) {
 			[]string{"describe", "pods", "qu2%:10"},
 			Params{
 				Match: &ParamsMatch{
-					Query:   "qu2",
-					Entity:  "pods",
-					Select:  true,
-					Element: 10,
+					Query:       "qu2",
+					Resource:    "pods",
+					Select:      true,
+					Element:     10,
+					Placeholder: 3,
 				},
 				Args: []string{"describe", "pods"},
 			},

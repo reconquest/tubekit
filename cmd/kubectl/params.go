@@ -19,11 +19,12 @@ type Params struct {
 }
 
 type ParamsMatch struct {
-	Entity   string
-	Query    string
-	Parallel bool
-	Select   bool
-	Element  int
+	Resource    string
+	Query       string
+	Parallel    bool
+	Select      bool
+	Element     int
+	Placeholder int
 }
 
 const (
@@ -41,6 +42,13 @@ const (
 	FlagNamespaceShort      = "-n"
 	FlagNamespaceShortValue = "-n="
 	FlagAllNamespaces       = "--all-namespaces"
+)
+
+var (
+	resourceMapping = map[string]string{
+		"exec": "pod",
+		"logs": "pod",
+	}
 )
 
 func parseParams(raw []string) Params {
@@ -116,10 +124,10 @@ func parseMatch(
 	raw []string,
 	index int,
 ) *ParamsMatch {
-
 	if value[len(value)-1] == SymbolMatch {
 		match := &ParamsMatch{
-			Entity: raw[index-1],
+			Resource:    mapResource(raw[index-1]),
+			Placeholder: index,
 		}
 
 		if value[len(value)-2] == SymbolMatch {
@@ -157,10 +165,11 @@ func parseMatch(
 
 			// also need to cut % and :
 			match := &ParamsMatch{
-				Entity:  raw[index-1],
-				Query:   value[:digitsStart-2],
-				Select:  true,
-				Element: element,
+				Resource:    mapResource(raw[index-1]),
+				Placeholder: index,
+				Query:       value[:digitsStart-2],
+				Select:      true,
+				Element:     element,
 			}
 
 			return match
@@ -174,6 +183,15 @@ func parseMatch(
 	}
 
 	return nil
+}
+
+func mapResource(resource string) string {
+	mapped, ok := resourceMapping[resource]
+	if ok {
+		return mapped
+	}
+
+	return resource
 }
 
 func parseContext(

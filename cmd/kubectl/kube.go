@@ -30,30 +30,70 @@ func parseKubernetesContexts() ([]string, error) {
 	return contexts, nil
 }
 
-func requestNamespaces(ctlPath, context string) ([]string, error) {
-	args := []string{ctlPath}
-	if context != "" {
-		args = append(args, "--context="+context)
-	}
-
-	args = append(
-		args,
+func requestNamespaces(ctlPath string, params Params) ([]string, error) {
+	// omit namespace argument because requesting list of them
+	cmd, args := getCommand(
+		ctlPath, buildArgContext(params), "",
 		"get", "namespaces", "-o", "json",
 	)
 
-	cmd := exec.Command(args[0], args[1:]...)
+	ctx := karma.Describe(
+		"cmdline",
+		fmt.Sprintf("%q", args),
+	)
 
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 
 	contents, err := cmd.Output()
 	if err != nil {
-		return nil, karma.Format(
+		return nil, ctx.Format(
 			err,
-			"%q failed", args,
+			"kubectl command failed",
 		)
 	}
 
+	namespaces, err := unmarshalNames(contents)
+	if err != nil {
+		return nil, ctx.Reason(err)
+	}
+
+	return namespaces, nil
+}
+
+func requestResources(ctlPath string, params Params) ([]string, error) {
+	cmd, args := getCommand(
+		ctlPath,
+		buildArgContext(params),
+		buildArgNamespace(params),
+		"get", params.Match.Resource, "-o", "json",
+	)
+
+	ctx := karma.Describe(
+		"cmdline",
+		fmt.Sprintf("%q", args),
+	)
+
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+
+	contents, err := cmd.Output()
+	if err != nil {
+		return nil, ctx.Format(
+			err,
+			"kubectl command failed",
+		)
+	}
+
+	resources, err := unmarshalNames(contents)
+	if err != nil {
+		return nil, ctx.Reason(err)
+	}
+
+	return resources, nil
+}
+
+func unmarshalNames(contents []byte) ([]string, error) {
 	var answer struct {
 		Items []struct {
 			Metadata struct {
@@ -62,26 +102,55 @@ func requestNamespaces(ctlPath, context string) ([]string, error) {
 		}
 	}
 
-	err = json.Unmarshal(contents, &answer)
+	err := json.Unmarshal(contents, &answer)
 	if err != nil {
-		return nil, karma.
-			Describe(
-				"cmdline",
-				fmt.Sprintf("%q", args),
-			).
-			Format(
-				err,
-				"unable to unmarshal JSON output",
-			)
+		return nil, karma.Format(
+			err,
+			"unable to unmarshal JSON output",
+		)
 	}
 
-	namespaces := []string{}
+	resources := []string{}
 	for _, item := range answer.Items {
-		namespaces = append(namespaces, item.Metadata.Name)
+		resources = append(resources, item.Metadata.Name)
 	}
 
-	return namespaces, nil
+	return resources, nil
 }
 
-//func getCommand(context string, namespace string, values ...string) *exec.Cmd {
-//}
+func getCommand(
+	ctlPath string,
+	argContext,
+	argNamespace string,
+	value ...string,
+) (*exec.Cmd, []string) {
+	args := []string{}
+	if argContext != "" {
+		args = append(args, argContext)
+	}
+	if argNamespace != "" {
+		args = append(args, argNamespace)
+	}
+
+	args = append(args, value...)
+
+	return exec.Command(ctlPath, args...), append([]string{ctlPath}, args...)
+}
+
+func buildArgContext(params Params) string {
+	if params.Context != "" {
+		return "--context=" + params.Context
+	}
+
+	return ""
+}
+
+func buildArgNamespace(params Params) string {
+	if params.AllNamespaces {
+		return "--all-namespaces"
+	} else if params.Namespace != "" {
+		return "--namespace=" + params.Namespace
+	}
+
+	return ""
+}
