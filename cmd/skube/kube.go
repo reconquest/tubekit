@@ -49,7 +49,7 @@ func requestNamespaces(ctlPath string, params Params) ([]string, error) {
 	if err != nil {
 		return nil, ctx.Format(
 			err,
-			"kubectl command failed",
+			"skube command failed",
 		)
 	}
 
@@ -81,7 +81,7 @@ func requestResources(ctlPath string, params Params) ([]string, error) {
 	if err != nil {
 		return nil, ctx.Format(
 			err,
-			"kubectl command failed",
+			"skube command failed",
 		)
 	}
 

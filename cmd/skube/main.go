@@ -108,7 +108,7 @@ func matchResources(resources []string, params *ParamsMatch) ([]string, error) {
 func syscallExec(ctlPath string, args []string) {
 	syscall.Exec(
 		ctlPath,
-		append([]string{"kubectl"}, args...),
+		append([]string{ctlPath}, args...),
 		os.Environ(),
 	)
 }

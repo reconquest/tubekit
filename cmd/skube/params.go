@@ -56,7 +56,7 @@ func parseParams(raw []string) Params {
 
 	for index := 0; index < len(raw); index++ {
 		// skip name of program, we don't need it since we are going to run
-		// kubectl
+		// skube
 		if index == 0 {
 			continue
 		}
