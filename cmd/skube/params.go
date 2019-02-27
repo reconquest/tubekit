@@ -46,8 +46,9 @@ const (
 
 var (
 	resourceMapping = map[string]string{
-		"exec": "pod",
-		"logs": "pod",
+		"exec":         "pod",
+		"logs":         "pod",
+		"port-forward": "pod",
 	}
 )
 
