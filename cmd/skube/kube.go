@@ -85,6 +85,10 @@ func requestResources(ctlPath string, params *Params) ([]Resource, error) {
 		"get", params.Match.Resource, "-o", "json",
 	)
 
+	if debug {
+		log.Printf(":: %q", args)
+	}
+
 	ctx := karma.Describe(
 		"cmdline",
 		fmt.Sprintf("%q", args),
