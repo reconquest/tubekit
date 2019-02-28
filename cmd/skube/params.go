@@ -35,6 +35,10 @@ const (
 )
 
 const (
+	DefaultResource = "pod"
+)
+
+const (
 	FlagContext             = "--context"
 	FlagContextValue        = "--context="
 	FlagNamespace           = "--namespace"
@@ -130,7 +134,7 @@ func parseMatch(
 
 	if value[len(value)-1] == SymbolMatch {
 		match := &ParamsMatch{
-			Resource:    mapResource(args[len(args)-1]),
+			Resource:    parseResource(args),
 			Placeholder: placeholder,
 		}
 
@@ -169,7 +173,7 @@ func parseMatch(
 
 			// also need to cut % and :
 			match := &ParamsMatch{
-				Resource:    mapResource(args[len(args)-1]),
+				Resource:    parseResource(args),
 				Placeholder: placeholder,
 				Query:       value[:digitsStart-2],
 				Select:      true,
@@ -187,6 +191,18 @@ func parseMatch(
 	}
 
 	return nil
+}
+
+func parseResource(args []string) string {
+	for i := len(args) - 1; i > 0; i-- {
+		resource := args[i]
+
+		if len(resource) > 1 && resource[0] != '-' {
+			return mapResource(resource)
+		}
+	}
+
+	return DefaultResource
 }
 
 func mapResource(resource string) string {

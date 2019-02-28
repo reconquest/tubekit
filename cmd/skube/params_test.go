@@ -299,6 +299,17 @@ func TestParams_Suites(t *testing.T) {
 				Args: []string{"logs"},
 			},
 		},
+		{
+			[]string{"exec", "-i", "-t", "blah%"},
+			&Params{
+				Match: &ParamsMatch{
+					Resource:    "pod",
+					Query:       "blah",
+					Placeholder: 3,
+				},
+				Args: []string{"exec", "-i", "-t"},
+			},
+		},
 		//
 	}
 
