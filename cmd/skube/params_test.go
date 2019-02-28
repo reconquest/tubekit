@@ -310,6 +310,12 @@ func TestParams_Suites(t *testing.T) {
 				Args: []string{"exec", "-i", "-t"},
 			},
 		},
+		{
+			[]string{"blah%"},
+			&Params{
+				Args: []string{"blah%"},
+			},
+		},
 		//
 	}
 
