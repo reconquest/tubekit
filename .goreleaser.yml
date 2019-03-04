@@ -1,0 +1,33 @@
+env:
+  - GO111MODULE=on
+before:
+  hooks:
+    - go mod download
+    - make test
+builds:
+    - main: ./cmd/tubectl
+      binary: tubectl
+
+      asmflags:
+        - all=-trimpath={{.Env.GOPATH}}
+
+      gcflags:
+        - all=-trimpath={{.Env.GOPATH}}
+
+      ldflags:
+       - -s -w -X main.version={{.Env.VERSION}}
+archive:
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
