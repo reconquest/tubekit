@@ -11,7 +11,10 @@ contexts, namespaces and intelligent matching resources.
 
 ## Installation
 
-#### Releases
+#### Binaries
+
+Binaries can be found on [releases
+page](https://github.com/reconquest/quadro/releases).
 
 #### Standalone
 

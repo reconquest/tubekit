@@ -10,3 +10,9 @@ version:
 
 test:
 	@go test -failfast -v ./...
+
+build:
+	GO111MODULES=on CGO_ENABLED=0 go build \
+		 -ldflags="-s -w -X main.version=$(VERSION)" \
+		 -gcflags="-trimpath=$(GOPATH)" \
+		 ./cmd/...
