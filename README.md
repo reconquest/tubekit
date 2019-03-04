@@ -11,10 +11,22 @@ contexts, namespaces and intelligent matching resources.
 
 ## Installation
 
+#### Arch Linux
+
+The package is always available in AUR:
+[quadro-git](https://aur.archlinux.org/packages/quadro-git).
+
+#### Debian
+
+Debian packages can be found on [releases page](https://github.com/reconquest/quadro/releases).
+
+#### Fedora, CentOS
+
+Debian packages can be found on [releases page](https://github.com/reconquest/quadro/releases).
+
 #### Binaries
 
-Binaries can be found on [releases
-page](https://github.com/reconquest/quadro/releases).
+Binaries can be found on [releases page](https://github.com/reconquest/quadro/releases).
 
 #### Standalone
 
