@@ -35,6 +35,8 @@ With your [GOPATH](https://github.com/golang/go/wiki/GOPATH) already set up:
 go get github.com/reconquest/tubekit/cmd/...
 ```
 
+## Usage
+
 ### Quick context
 
 Very often you need to switch between environments and therefore you need to
