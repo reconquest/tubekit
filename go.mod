@@ -1,4 +1,4 @@
-module github.com/reconquest/quadro
+module github.com/reconquest/tubekit
 
 require (
 	github.com/gogo/protobuf v1.2.1 // indirect

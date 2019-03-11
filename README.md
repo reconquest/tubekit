@@ -1,6 +1,6 @@
-# QUADRO
+# TUBEKIT
 
-Quadro is the project that summoned to help Kubernetes users and operators to
+tubekit is the project that summoned to help Kubernetes users and operators to
 increase their effectiveness in terms of operating clusters using kubectl.
 
 ## tubectl
@@ -14,25 +14,25 @@ contexts, namespaces and intelligent matching resources.
 #### Arch Linux
 
 The package is always available in AUR:
-[quadro-git](https://aur.archlinux.org/packages/quadro-git).
+[tubekit-git](https://aur.archlinux.org/packages/tubekit-git).
 
 #### Debian
 
-Debian packages can be found on [releases page](https://github.com/reconquest/quadro/releases).
+Debian packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
 
 #### Fedora, CentOS
 
-Debian packages can be found on [releases page](https://github.com/reconquest/quadro/releases).
+Debian packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
 
 #### Binaries
 
-Binaries can be found on [releases page](https://github.com/reconquest/quadro/releases).
+Binaries can be found on [releases page](https://github.com/reconquest/tubekit/releases).
 
 #### Standalone
 
 With your [GOPATH](https://github.com/golang/go/wiki/GOPATH) already set up:
 ```
-go get github.com/reconquest/quadro/cmd/...
+go get github.com/reconquest/tubekit/cmd/...
 ```
 
 ### Quick context

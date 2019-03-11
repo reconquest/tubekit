@@ -13,12 +13,12 @@ import (
 )
 
 var (
-	debug = os.Getenv("QUADRO_DEBUG") == "1"
+	debug = os.Getenv("TUBEKIT_DEBUG") == "1"
 )
 
 func main() {
 	ctlPath := "/usr/bin/kubectl"
-	if envPath := os.Getenv("QUADRO_KUBECTL"); envPath != "" {
+	if envPath := os.Getenv("TUBEKIT_KUBECTL"); envPath != "" {
 		ctlPath = envPath
 	}
 

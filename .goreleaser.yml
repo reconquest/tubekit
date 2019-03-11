@@ -38,7 +38,7 @@ nfpm:
     linux: Tux
   vendor: we@reconquest.io
 
-  homepage: https://github.com/reconquest/quadro
+  homepage: https://github.com/reconquest/tubekit
 
   maintainer: we@reconquest.io
 
