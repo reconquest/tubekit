@@ -65,7 +65,7 @@ Forget about `--all-namespaces`, just use the `++` flag.
 With kubectl you used to do like that:
 
 ```
-kubectl @staging --all-namespaces get pods
+kubectl --context staging --all-namespaces get pods
 ```
 
 Now you can type:
