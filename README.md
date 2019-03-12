@@ -16,13 +16,9 @@ contexts, namespaces and intelligent matching resources.
 The package is always available in AUR:
 [tubekit-git](https://aur.archlinux.org/packages/tubekit-git).
 
-#### Debian
+#### Debian/Fedora/CentOS
 
-Debian packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
-
-#### Fedora, CentOS
-
-Debian packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
+Packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
 
 #### Binaries
 
@@ -31,11 +27,14 @@ Binaries can be found on [releases page](https://github.com/reconquest/tubekit/r
 #### Standalone
 
 With your [GOPATH](https://github.com/golang/go/wiki/GOPATH) already set up:
+
 ```
 go get github.com/reconquest/tubekit/cmd/...
 ```
 
 ## Usage
+
+[![asciicast](https://asciinema.org/a/233185.svg)](https://asciinema.org/a/233185)
 
 ### Quick context
 
