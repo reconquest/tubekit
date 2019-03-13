@@ -1,7 +1,7 @@
 # TUBEKIT
 
-tubekit is a project that is summoned to help Kubernetes users and operators to
-increase their effectiveness in terms of operating clusters using kubectl.
+tubekit helps you to operate Kubernetes clusters more effectively by reducing
+time spent on everyday routines.
 
 ## tubectl
 
