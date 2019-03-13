@@ -5,6 +5,8 @@ time spent on everyday routines.
 
 ## tubectl
 
+[![Build Status](https://travis-ci.org/reconquest/tubekit.svg?branch=master)](https://travis-ci.org/reconquest/tubekit)
+
 Tubectl is a simple yet powerful wrapper around kubectl which adds a bit of magic
 to your everyday kubectl routines by reducing the complexity of working with
 contexts, namespaces and intelligent matching resources.
