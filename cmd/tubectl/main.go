@@ -124,9 +124,7 @@ func syscallExec(ctlPath string, params *Params) {
 		args = append(args, arg)
 	}
 
-	if debug {
-		log.Printf(":: %q", args)
-	}
+	debugcmd(args)
 
 	syscall.Exec(
 		ctlPath,
@@ -190,4 +188,15 @@ func complete(items []string, query string) string {
 	}
 
 	return partial
+}
+
+func debugcmd(args []string) {
+	if debug {
+		values := []string{}
+		for _, arg := range args {
+			values = append(values, fmt.Sprintf("%q", arg))
+		}
+
+		log.Printf("%s", strings.Join(values, " "))
+	}
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"sync"
@@ -77,9 +76,7 @@ func parallelize(tasks []Task) {
 }
 
 func run(ctlPath string, args []string, writer io.Writer) error {
-	if debug {
-		log.Printf(":: %q", append([]string{ctlPath}, args...))
-	}
+	debugcmd(append([]string{ctlPath}, args...))
 
 	cmd := exec.Command(ctlPath, args...)
 	cmd.Stdout = writer

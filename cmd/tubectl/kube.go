@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"sort"
@@ -43,9 +42,7 @@ func requestNamespaces(ctlPath string, params *Params) ([]string, error) {
 		"get", "namespaces", "-o", "json",
 	)
 
-	if debug {
-		log.Printf(":: %q", args)
-	}
+	debugcmd(args)
 
 	ctx := karma.Describe(
 		"cmdline",
@@ -85,9 +82,7 @@ func requestResources(ctlPath string, params *Params) ([]Resource, error) {
 		"get", params.Match.Resource, "-o", "json",
 	)
 
-	if debug {
-		log.Printf(":: %q", args)
-	}
+	debugcmd(args)
 
 	ctx := karma.Describe(
 		"cmdline",
