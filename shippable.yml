@@ -1,0 +1,5 @@
+language: go
+
+build:
+    ci:
+        - make test

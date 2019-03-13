@@ -11,7 +11,7 @@ version:
 	@echo $(VERSION)
 
 test:
-	@go test -failfast -v ./...
+	$(GOFLAGS) go test -failfast -v ./...
 
 get:
 	$(GOFLAGS) go get -v -d
