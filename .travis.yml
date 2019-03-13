@@ -6,4 +6,5 @@ go:
 go_import_path: github.com/reconquest/tubekit
 
 script:
+ - make build
  - make test
