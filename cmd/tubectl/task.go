@@ -18,13 +18,9 @@ func getTasks(
 	params *Params,
 	resources []Resource,
 ) []Task {
-	tasks := []Task{}
-
-	for _, resource := range resources {
-		tasks = append(
-			tasks,
-			getTask(ctlPath, params, resource),
-		)
+	tasks := make([]Task, len(resources))
+	for i, resource := range resources {
+		tasks[i] = getTask(ctlPath, params, resource)
 	}
 
 	return tasks
