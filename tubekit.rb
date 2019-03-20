@@ -1,9 +1,9 @@
 class Tubekit < Formula
   desc "Tool that helps you to operate Kubernetes clusters more effectively"
   homepage "https://github.com/reconquest/tubekit"
-  url "https://github.com/reconquest/tubekit/releases/download/v2/tubekit_2_Darwin_x86_64.tar.gz"
-  sha256 "e64ce03124f6f3ab7675d5f4d5f721add6fab0184db318a3dc24da0fd9ed2f92"
   head "https://github.com/reconquest/tubekit.git"
+  url "https://github.com/reconquest/tubekit/releases/download/v3/tubekit_3_Darwin_x86_64.tar.gz"
+  sha256 "b966e7b014e0d16e22f0d15dbd7c80a084160c6851bf7ad767d0085ac3ac10d1"
 
   bottle :unneeded
 
