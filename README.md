@@ -180,6 +180,13 @@ the same time.
     tubectl exec +sys '(apiserver|scheduler)%' -- id
     ```
 
+### Custom flags
+
+Tubectl supports a few own flags, they all have prefix `--tube`:
+
+* `--tube-version` - prints version of the program
+* `--tube-debug` - enables debug mode, also can be turned on by `TUBEKIT_DEBUG`
+* `--tube-help` - prints short help message about the program.
 
 ### Authors
 

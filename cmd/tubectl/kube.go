@@ -35,10 +35,10 @@ func parseKubernetesContexts() ([]string, error) {
 	return contexts, nil
 }
 
-func requestNamespaces(ctlPath string, params *Params) ([]string, error) {
+func requestNamespaces(client string, params *Params) ([]string, error) {
 	// omit namespace argument because requesting list of them
 	cmd, args := getCommand(
-		ctlPath, buildArgContext(params.Context), "", "",
+		client, buildArgContext(params.Context), "", "",
 		"get", "namespaces", "-o", "json",
 	)
 
@@ -73,9 +73,9 @@ func requestNamespaces(ctlPath string, params *Params) ([]string, error) {
 	return namespaces, nil
 }
 
-func requestResources(ctlPath string, params *Params) ([]Resource, error) {
+func requestResources(client string, params *Params) ([]Resource, error) {
 	cmd, args := getCommand(
-		ctlPath,
+		client,
 		buildArgContext(params.Context),
 		buildArgNamespace(params.Namespace),
 		buildArgAllNamespaces(params.AllNamespaces),
@@ -132,7 +132,7 @@ func unmarshalResources(contents []byte) ([]Resource, error) {
 }
 
 func getCommand(
-	ctlPath string,
+	client string,
 	argContext,
 	argNamespace string,
 	argAllNamespaces string,
@@ -152,7 +152,7 @@ func getCommand(
 		args = append(args, argAllNamespaces)
 	}
 
-	return exec.Command(ctlPath, args...), append([]string{ctlPath}, args...)
+	return exec.Command(client, args...), append([]string{client}, args...)
 }
 
 func buildArgContext(value string) string {

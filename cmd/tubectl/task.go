@@ -14,19 +14,19 @@ import (
 type Task func(io.Writer) error
 
 func getTasks(
-	ctlPath string,
+	client string,
 	params *Params,
 	resources []Resource,
 ) []Task {
 	tasks := make([]Task, len(resources))
 	for i, resource := range resources {
-		tasks[i] = getTask(ctlPath, params, resource)
+		tasks[i] = getTask(client, params, resource)
 	}
 
 	return tasks
 }
 
-func getTask(ctlPath string, params *Params, resource Resource) Task {
+func getTask(client string, params *Params, resource Resource) Task {
 	return func(writer io.Writer) error {
 		values := []string{}
 
@@ -47,7 +47,7 @@ func getTask(ctlPath string, params *Params, resource Resource) Task {
 
 		values = append(values, params.Args[params.Match.Placeholder:]...)
 
-		return run(ctlPath, values, writer)
+		return run(client, values, writer)
 	}
 }
 
@@ -71,10 +71,10 @@ func parallelize(tasks []Task) {
 	workers.Wait()
 }
 
-func run(ctlPath string, args []string, writer io.Writer) error {
-	debugcmd(append([]string{ctlPath}, args...))
+func run(client string, args []string, writer io.Writer) error {
+	debugcmd(append([]string{client}, args...))
 
-	cmd := exec.Command(ctlPath, args...)
+	cmd := exec.Command(client, args...)
 	cmd.Stdout = writer
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
@@ -83,7 +83,7 @@ func run(ctlPath string, args []string, writer io.Writer) error {
 		return karma.
 			Describe(
 				"cmdline",
-				fmt.Sprintf("%q", append([]string{ctlPath}, args...)),
+				fmt.Sprintf("%q", append([]string{client}, args...)),
 			).Format(err, "command failed")
 	}
 

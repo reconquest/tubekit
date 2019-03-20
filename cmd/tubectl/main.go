@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
+	"os/exec"
 	"strings"
 	"syscall"
 
@@ -13,28 +13,89 @@ import (
 )
 
 var (
-	debug = os.Getenv("TUBEKIT_DEBUG") == "1"
+	version = "manual build"
+	debug   = os.Getenv("TUBEKIT_DEBUG") == "1"
 )
 
+const (
+	messageHelp = `tubectl
+
+tubectl is a simple yet powerful wrapper around kubectl which adds a bit of
+magic to your everyday kubectl routines by reducing the complexity of working
+with contexts, namespaces and intelligent matching resources.
+
+Usage:
+	tubectl [kubectl options]
+
+Options:
+  --tube-version  Show version of tubectl.
+  --tube-debug    Print debug messages.
+  --tube-help     Show this message.
+
+Docs: https://github.com/reconquest/tubekit`
+)
+
+func initFlags() {
+	var flags *Flags
+	var err error
+
+	os.Args, flags, err = parseFlags(os.Args)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	switch {
+	case flags.Help:
+		fmt.Println(messageHelp)
+		os.Exit(0)
+
+	case flags.Debug:
+		debug = true
+
+	case flags.Version:
+		fmt.Println(version)
+		os.Exit(0)
+	}
+}
+
+func getClientPath() (string, error) {
+	env := os.Getenv("TUBEKIT_KUBECTL")
+	if env != "" {
+		return env, nil
+	}
+
+	path, err := exec.LookPath("kubectl")
+	if err != nil {
+		return "", karma.Format(
+			err,
+			"unable to find kubectl in $PATH, have you installed it?",
+		)
+	}
+
+	return path, nil
+}
+
 func main() {
-	ctlPath := "/usr/bin/kubectl"
-	if envPath := os.Getenv("TUBEKIT_KUBECTL"); envPath != "" {
-		ctlPath = envPath
+	initFlags()
+
+	client, err := getClientPath()
+	if err != nil {
+		log.Fatalln(err)
 	}
 
 	params := parseParams(os.Args)
 
-	params, err := completeParams(ctlPath, params)
+	params, err = completeParams(client, params)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	if params.Match == nil {
-		syscallExec(ctlPath, params)
+		syscallExec(client, params)
 		return
 	}
 
-	resources, err := requestResources(ctlPath, params)
+	resources, err := requestResources(client, params)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -66,7 +127,7 @@ func main() {
 		)
 	}
 
-	tasks := getTasks(ctlPath, params, matched)
+	tasks := getTasks(client, params, matched)
 
 	if params.Match.Parallel {
 		parallelize(tasks)
@@ -88,27 +149,8 @@ func main() {
 	os.Exit(code)
 }
 
-func matchResources(resources []Resource, params *ParamsMatch) ([]Resource, error) {
-	exp, err := regexp.Compile(params.Query)
-	if err != nil {
-		return nil, karma.Format(
-			err,
-			"unable to compile regexp: %s", params.Query,
-		)
-	}
-
-	matched := []Resource{}
-	for _, resource := range resources {
-		if exp.MatchString(resource.Name) {
-			matched = append(matched, resource)
-		}
-	}
-
-	return matched, nil
-}
-
-func syscallExec(ctlPath string, params *Params) {
-	args := []string{ctlPath}
+func syscallExec(client string, params *Params) {
+	args := []string{client}
 
 	if arg := buildArgContext(params.Context); arg != "" {
 		args = append(args, arg)
@@ -127,67 +169,10 @@ func syscallExec(ctlPath string, params *Params) {
 	debugcmd(args)
 
 	syscall.Exec(
-		ctlPath,
+		client,
 		args,
 		os.Environ(),
 	)
-}
-
-func completeParams(ctlPath string, params *Params) (*Params, error) {
-	if params.CompleteContext {
-		contexts, err := parseKubernetesContexts()
-		if err != nil {
-			return params, err
-		}
-
-		completed := complete(contexts, params.Context)
-		if completed == "" && params.Context != "" {
-			return params, fmt.Errorf(
-				"unable to find such context: %s",
-				params.Context,
-			)
-		}
-
-		params.Context = completed
-	}
-
-	if params.CompleteNamespace {
-		namespaces, err := requestNamespaces(ctlPath, params)
-		if err != nil {
-			return params, karma.Format(
-				err,
-				"unable to retrieve list of available namespaces",
-			)
-		}
-
-		completed := complete(namespaces, params.Namespace)
-		if completed == "" && params.Context != "" {
-			return params, fmt.Errorf(
-				"unable to find such namespace in context %s: %s",
-				params.Context,
-				params.Namespace,
-			)
-		}
-
-		params.Namespace = completed
-	}
-
-	return params, nil
-}
-
-func complete(items []string, query string) string {
-	var partial string
-	for _, item := range items {
-		if item == query {
-			return item
-		}
-
-		if strings.Contains(item, query) {
-			partial = item
-		}
-	}
-
-	return partial
 }
 
 func debugcmd(args []string) {
