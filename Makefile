@@ -1,6 +1,7 @@
 NAME = $(notdir $(PWD))
 
-VERSION = $(shell printf "%s.%s" \
+VERSION = $(shell printf "%s.%s.%s" \
+	$$(git describe --tags) \
 	$$(git rev-list --count HEAD) \
 	$$(git rev-parse --short HEAD) \
 )
