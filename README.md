@@ -22,6 +22,13 @@ The package is always available in AUR:
 
 Packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
 
+#### macOS
+
+```
+brew tap reconquest/tubekit https://github.com/reconquest/tubekit.git
+brew install reconquest/tubekit
+```
+
 #### Binaries
 
 Binaries can be found on [releases page](https://github.com/reconquest/tubekit/releases).
