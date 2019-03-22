@@ -26,7 +26,7 @@ Packages can be found on [releases page](https://github.com/reconquest/tubekit/r
 
 ```
 brew tap reconquest/tubekit https://github.com/reconquest/tubekit.git
-brew install reconquest/tubekit
+brew install tubekit
 ```
 
 #### Binaries
