@@ -1,0 +1,41 @@
+{
+  "projectName": "tubekit",
+  "projectOwner": "reconquest",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "saromanov",
+      "name": "Sergey Romanov",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7413968?v=4",
+      "profile": "https://github.com/saromanov",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "e1senh0rn",
+      "name": "Dmitry Shaposhnik",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/27363?v=4",
+      "profile": "http://dmitry.shaposhnik.name",
+      "contributions": [
+        "platform"
+      ]
+    },
+    {
+      "login": "nesl247",
+      "name": "Harrison Heck",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1037526?v=4",
+      "profile": "https://twitter.com/nesl247",
+      "contributions": [
+        "platform"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
