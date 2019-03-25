@@ -185,7 +185,7 @@ the same time.
     or in parallel (concurrent) mode:
 
     ```
-    tubectl exec +sys '(apiserver|scheduler)%' -- id
+    tubectl exec +sys '(apiserver|scheduler)%%' -- id
     ```
 
 ### Custom flags
