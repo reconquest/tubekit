@@ -29,7 +29,7 @@ func matchResources(resources []Resource, params *ParamsMatch) ([]Resource, erro
 
 func completeParams(client string, params *Params) (*Params, error) {
 	if params.CompleteContext {
-		contexts, err := parseKubernetesContexts()
+		contexts, err := parseKubernetesContexts(params.Kubeconfig)
 		if err != nil {
 			return params, err
 		}

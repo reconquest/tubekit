@@ -152,6 +152,10 @@ func main() {
 func syscallExec(client string, params *Params) {
 	args := []string{client}
 
+	if arg := buildArgKubeconfig(params.Kubeconfig); arg != "" {
+		args = append(args, arg)
+	}
+
 	if arg := buildArgContext(params.Context); arg != "" {
 		args = append(args, arg)
 	}

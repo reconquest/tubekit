@@ -316,6 +316,27 @@ func TestParams_Suites(t *testing.T) {
 				Args: []string{"blah%"},
 			},
 		},
+		{
+			[]string{"--kubeconfig=x", "a"},
+			&Params{
+				Args:       []string{"a"},
+				Kubeconfig: "x",
+			},
+		},
+		{
+			[]string{"--kubeconfig", "x", "a"},
+			&Params{
+				Args:       []string{"a"},
+				Kubeconfig: "x",
+			},
+		},
+		{
+			[]string{"--kubeconfig", "x", "a", "--kubeconfig=y", "z"},
+			&Params{
+				Args:       []string{"a", "--kubeconfig=y", "z"},
+				Kubeconfig: "x",
+			},
+		},
 		//
 	}
 

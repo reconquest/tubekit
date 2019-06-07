@@ -30,6 +30,10 @@ func getTask(client string, params *Params, resource Resource) Task {
 	return func(writer io.Writer) error {
 		values := []string{}
 
+		if arg := buildArgKubeconfig(params.Kubeconfig); arg != "" {
+			values = append(values, arg)
+		}
+
 		if arg := buildArgContext(params.Context); arg != "" {
 			values = append(values, arg)
 		}

@@ -15,7 +15,8 @@ type Params struct {
 	Namespace         string
 	AllNamespaces     bool
 
-	Match *ParamsMatch
+	Match      *ParamsMatch
+	Kubeconfig string
 }
 
 type ParamsMatch struct {
@@ -46,6 +47,8 @@ const (
 	FlagNamespaceShort      = "-n"
 	FlagNamespaceShortValue = "-n="
 	FlagAllNamespaces       = "--all-namespaces"
+	FlagKubeconfig          = "--kubeconfig"
+	FlagKubeconfigValue     = "--kubeconfig="
 )
 
 var (
@@ -72,6 +75,18 @@ func parseParams(raw []string) *Params {
 			// with special symbol and a symbol like @\w+ or it's -n
 			params.Args = append(params.Args, value)
 			continue
+		}
+
+		if params.Kubeconfig == "" {
+			var usedNext bool
+			params.Kubeconfig, usedNext = parseKubeconfig(value, raw, index)
+			if usedNext {
+				index++
+			}
+
+			if params.Kubeconfig != "" {
+				continue
+			}
 		}
 
 		if params.Context == "" {
@@ -234,6 +249,27 @@ func parseContext(
 	if len(value) > len(FlagContextValue) &&
 		strings.HasPrefix(value, FlagContextValue) {
 		return value[len(FlagContextValue):], false
+	}
+
+	return "", false
+}
+
+func parseKubeconfig(
+	value string,
+	args []string,
+	index int,
+) (name string, usedNext bool) {
+	if value == FlagKubeconfig {
+		if index+1 <= len(args)-1 {
+			return args[index+1], true
+		}
+
+		return "", false
+	}
+
+	if len(value) > len(FlagKubeconfigValue) &&
+		strings.HasPrefix(value, FlagKubeconfigValue) {
+		return value[len(FlagKubeconfigValue):], false
 	}
 
 	return "", false

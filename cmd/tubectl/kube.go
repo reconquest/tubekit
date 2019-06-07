@@ -16,8 +16,16 @@ type Resource struct {
 	Namespace string
 }
 
-func parseKubernetesContexts() ([]string, error) {
-	config, err := clientcmdapi.NewDefaultClientConfigLoadingRules().Load()
+func parseKubernetesContexts(kubeconfig string) ([]string, error) {
+	loader := clientcmdapi.NewDefaultClientConfigLoadingRules()
+	if kubeconfig != "" {
+		loader.Precedence = append(
+			[]string{kubeconfig},
+			loader.Precedence...,
+		)
+	}
+
+	config, err := loader.Load()
 	if err != nil {
 		return nil, karma.Format(
 			err,
@@ -38,7 +46,10 @@ func parseKubernetesContexts() ([]string, error) {
 func requestNamespaces(client string, params *Params) ([]string, error) {
 	// omit namespace argument because requesting list of them
 	cmd, args := getCommand(
-		client, buildArgContext(params.Context), "", "",
+		client, 
+		buildArgKubeconfig(params.Kubeconfig),
+		buildArgContext(params.Context),
+		"", "",
 		"get", "namespaces", "-o", "json",
 	)
 
@@ -76,6 +87,7 @@ func requestNamespaces(client string, params *Params) ([]string, error) {
 func requestResources(client string, params *Params) ([]Resource, error) {
 	cmd, args := getCommand(
 		client,
+		buildArgKubeconfig(params.Kubeconfig),
 		buildArgContext(params.Context),
 		buildArgNamespace(params.Namespace),
 		buildArgAllNamespaces(params.AllNamespaces),
@@ -133,12 +145,16 @@ func unmarshalResources(contents []byte) ([]Resource, error) {
 
 func getCommand(
 	client string,
-	argContext,
+	argKubeconfig string,
+	argContext string,
 	argNamespace string,
 	argAllNamespaces string,
 	value ...string,
 ) (*exec.Cmd, []string) {
 	args := []string{}
+	if argKubeconfig != "" {
+		args = append(args, argKubeconfig)
+	}
 	if argContext != "" {
 		args = append(args, argContext)
 	}
@@ -153,6 +169,14 @@ func getCommand(
 	}
 
 	return exec.Command(client, args...), append([]string{client}, args...)
+}
+
+func buildArgKubeconfig(value string) string {
+	if value != "" {
+		return "--kubeconfig=" + value
+	}
+
+	return ""
 }
 
 func buildArgContext(value string) string {
