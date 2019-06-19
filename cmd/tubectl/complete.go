@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/reconquest/karma-go"
@@ -53,6 +54,8 @@ func completeParams(client string, params *Params) (*Params, error) {
 				"unable to retrieve list of available namespaces",
 			)
 		}
+
+		sort.Strings(namespaces)
 
 		completed := complete(namespaces, params.Namespace)
 		if completed == "" && params.Context != "" {
