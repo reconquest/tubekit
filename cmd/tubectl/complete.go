@@ -79,8 +79,10 @@ func complete(items []string, query string) string {
 			return item
 		}
 
-		if strings.Contains(item, query) {
-			partial = item
+		if partial == "" {
+			if strings.Contains(item, query) {
+				partial = item
+			}
 		}
 	}
 
