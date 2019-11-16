@@ -15,7 +15,7 @@ test:
 	$(GOFLAGS) go test -failfast -v ./...
 
 get:
-	$(GOFLAGS) go get -v -d
+	$(GOFLAGS) go get -v -d ./cmd/...
 
 build:
 	$(GOFLAGS) go build \
