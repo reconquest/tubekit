@@ -1,5 +1,7 @@
 module github.com/reconquest/tubekit
 
+go 1.14
+
 require (
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
