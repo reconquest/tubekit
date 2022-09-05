@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
+	stdlog "log"
 	"os"
 	"os/exec"
-	"strings"
 	"syscall"
 
+	"github.com/alessio/shellescape"
 	"github.com/reconquest/executil-go"
 	"github.com/reconquest/karma-go"
 )
@@ -25,7 +25,7 @@ magic to your everyday kubectl routines by reducing the complexity of working
 with contexts, namespaces and intelligent matching resources.
 
 Usage:
-	tubectl [kubectl options]
+  tubectl [kubectl options]
 
 Options:
   --tube-version  Show version of tubectl.
@@ -33,6 +33,10 @@ Options:
   --tube-help     Show this message.
 
 Docs: https://github.com/reconquest/tubekit`
+)
+
+var (
+	log = stdlog.New(os.Stderr, "[tubectl] ", 0)
 )
 
 func initFlags() {
@@ -181,11 +185,8 @@ func syscallExec(client string, params *Params) {
 
 func debugcmd(args []string) {
 	if debug {
-		values := []string{}
-		for _, arg := range args {
-			values = append(values, fmt.Sprintf("%q", arg))
-		}
+		command := shellescape.QuoteCommand(args)
 
-		log.Printf("%s", strings.Join(values, " "))
+		log.Printf("%s", command)
 	}
 }
