@@ -23,6 +23,14 @@ The package is always available in AUR:
 
 Packages can be found on [releases page](https://github.com/reconquest/tubekit/releases).
 
+#### nix (on Linux or macOS) / nixOS
+
+With flakes support:
+
+```
+$ nix profile install github:reconquest/tubekit
+```
+
 #### macOS
 
 ```
