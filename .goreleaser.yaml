@@ -21,7 +21,7 @@ builds:
 
 release:
   github:
-    owner: elthariel
+    owner: reconquest
     name: tubekit
   target_commitish: '{{ .Commit }}'
   mode: replace
