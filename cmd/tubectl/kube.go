@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"sort"
 
 	"github.com/reconquest/karma-go"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd"
@@ -38,15 +37,13 @@ func parseKubernetesContexts(kubeconfig string) ([]string, error) {
 		contexts = append(contexts, name)
 	}
 
-	sort.Strings(contexts)
-
 	return contexts, nil
 }
 
 func requestNamespaces(client string, params *Params) ([]string, error) {
 	// omit namespace argument because requesting list of them
 	cmd, args := getCommand(
-		client, 
+		client,
 		buildArgKubeconfig(params.Kubeconfig),
 		buildArgContext(params.Context),
 		"", "",
