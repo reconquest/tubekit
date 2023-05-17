@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sort"
 
 	"github.com/reconquest/karma-go"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd"
@@ -36,6 +37,9 @@ func parseKubernetesContexts(kubeconfig string) ([]string, error) {
 	for name := range config.Contexts {
 		contexts = append(contexts, name)
 	}
+
+	// sort contexts to make output stable
+	sort.Strings(contexts)
 
 	return contexts, nil
 }
