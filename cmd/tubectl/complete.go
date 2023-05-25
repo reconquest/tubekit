@@ -82,7 +82,6 @@ func complete(items []string, query string) string {
 		if partial == "" {
 			if strings.Contains(item, query) {
 				partial = item
-				break
 			}
 		}
 	}
