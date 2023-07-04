@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"sort"
+	"time"
 
 	"github.com/reconquest/karma-go"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd"
@@ -42,6 +43,19 @@ func parseKubernetesContexts(kubeconfig string) ([]string, error) {
 	sort.Strings(contexts)
 
 	return contexts, nil
+}
+
+// requestNamespacesWithCache returns list of namespaces available in current context.
+// it uses requestNamespaces() to retrieve list of namespaces from kubernetes
+// but caches the result in XDG_CACHE_HOME/tubekit/{current-context}/namespaces.json
+func requestNamespacesWithCache(client string, params *Params) ([]string, error) {
+	return useCache(
+		func() ([]string, error) {
+			return requestNamespaces(client, params)
+		},
+		fmt.Sprintf("%s/namespaces.json", params.Context),
+		time.Hour,
+	)
 }
 
 func requestNamespaces(client string, params *Params) ([]string, error) {

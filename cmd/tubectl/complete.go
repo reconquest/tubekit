@@ -47,7 +47,7 @@ func completeParams(client string, params *Params) (*Params, error) {
 	}
 
 	if params.CompleteNamespace {
-		namespaces, err := requestNamespaces(client, params)
+		namespaces, err := requestNamespacesWithCache(client, params)
 		if err != nil {
 			return params, karma.Format(
 				err,
